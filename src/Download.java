@@ -1,18 +1,15 @@
+import model.ItemSell;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
-import org.w3c.dom.NodeList;
 
 import javax.swing.*;
-import javax.swing.text.html.parser.Parser;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Download {
     private JPanel panel1;
@@ -22,12 +19,13 @@ public class Download {
     private JPanel jpanel2;
     private String link = "https://www.amazon.com/Stanco-Hotpoint-Electric-Reflector-Locking/dp/B001TH7H04?th=1&fbclid=IwAR1tLre7gYcki56g5EtL4ystmyEvV_RhuJ_XtbYH-JTy3LP1lLDIflXuFeI";
     public Download() {
+        textArea1.setText(link+"\n");
         btnClear.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 textArea1.setText("");
-                GetURLContent(link);
+
             }
         });
         btnDownLoad.addMouseListener(new MouseAdapter() {
@@ -38,7 +36,7 @@ public class Download {
                 String[] linksArray = links.split("\n");
 
                 for (String link : linksArray){
-                    System.out.println(link);
+                    GetURLContent(link);
                 }
             }
         });
@@ -54,8 +52,9 @@ public class Download {
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
+
     }
-    private void GetURLContent(String url){
+    private ItemSell GetURLContent(String url){
         Document doc = null;
         try {
             doc = Jsoup.connect(url).get();
@@ -64,9 +63,33 @@ public class Download {
         }
         System.out.println(doc.title());
         Elements newsHeadlines = doc.select("span#productTitle");
-        for (Element headline : newsHeadlines) {
-            System.out.println( "TITLE"+headline.childNode(0).outerHtml());
-        }
+//        System.out.println( "TITLE"+newsHeadlines.get(0).childNode(0).outerHtml());
+        ItemSell itemSell = new ItemSell();
+        itemSell.setProductTitle(newsHeadlines.get(0).childNode(0).outerHtml());
+//        Pattern pattern = Pattern.compile("<%=(.*?)%>", Pattern.DOTALL);
+//        Pattern pattern = Pattern.compile("var obj = jQuery.parseJSON('=(.*?)');\n"
+////                +"data"
+//                , Pattern.DOTALL);
+//        Matcher matcher = pattern.matcher(doc.outerHtml());
+//        while (matcher.find()) {
+//            System.out.println(matcher.group(1));
+//        }
+        for (Element script : doc.getElementsByTag("script")) {
+            String type = script.attr("type");
+            if (type.contentEquals("text/javascript") && script.outerHtml().contains("hiRes") &&
+                    script.outerHtml().contains("colorImages") && script.outerHtml().contains("dataInJson")) {
+                String scriptData = script.data(); // your text from the script
+                String[] arrayJavaS = scriptData.split("\n");
 
+                for (String jsItem : arrayJavaS){
+                    System.out.println("=");
+                    System.out.println(jsItem);
+                }
+
+//                break;
+            }
+//            System.out.println(script.outerHtml());
+        }
+        return itemSell;
     }
 }
