@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
+import javafx.scene.control.ProgressBar;
 import model.ItemSell;
 import model.LinkImage;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,7 @@ import org.jsoup.select.Elements;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -25,6 +27,7 @@ public class Download {
     private JPanel jpanel2;
     private String link = "https://www.amazon.com/Stanco-Hotpoint-Electric-Reflector-Locking/dp/B001TH7H04?th=1&fbclid=IwAR1tLre7gYcki56g5EtL4ystmyEvV_RhuJ_XtbYH-JTy3LP1lLDIflXuFeI";
     List<ItemSell> listAllItem = new ArrayList<>();
+
     public Download() {
         textArea1.setText(link+"\n");
         btnClear.addMouseListener(new MouseAdapter() {
@@ -39,6 +42,8 @@ public class Download {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
+
+
                 String links = textArea1.getText();
                 String[] linksArray = links.split("\n");
 
@@ -49,6 +54,8 @@ public class Download {
                 System.out.println("Result");
                 Gson gson = new Gson();
                 System.out.println(gson.toJson(listAllItem));
+                textArea1.setText(textArea1.getText()+"\n FINISH");
+
             }
         });
     }
@@ -154,4 +161,5 @@ public class Download {
             return map;
         }
     }
+
 }
